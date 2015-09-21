@@ -3,6 +3,11 @@
   "name": "Link Dredger",
   "version": "0.0.1",
 
+  "background": {
+    "persistent": false,
+    "scripts": ["eventPage.js"]
+  },
+
   "browser_action": {
   }
 }
