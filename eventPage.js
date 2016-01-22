@@ -24,13 +24,16 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     return disableButton(tabId);
   }
 
-  if (changeInfo.status === 'complete') {
-    if (!tab.url.match(/^https?:/)) {
-      return;
-    }
-
-    enableButton(tab.id);
+  if (changeInfo.status !== 'complete'
+      || !tab.url.match(/^https?:/)) {
+    return;
   }
+
+  chrome.tabs.executeScript(tabId, {
+    file: './content.js'
+  }, () => {
+    enableButton(tab.id);
+  });
 });
 
 chrome.browserAction.onClicked.addListener((tab) => {
