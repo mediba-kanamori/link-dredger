@@ -1,9 +1,15 @@
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request == 'myAction') {
-    hogehoge();
-  }
-});
+'use strict';
 
-function hogehoge() {
-  alert('puyopuyo');
-}
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  let actions = {
+    selectArea: () => {
+      alert('puyopuyo');
+    }
+  }
+
+  if (message.action in actions) {
+    actions[message.action]();
+  }
+
+  return true;
+});

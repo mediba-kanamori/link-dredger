@@ -37,7 +37,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 });
 
 chrome.browserAction.onClicked.addListener((tab) => {
-  chrome.tabs.sendMessage(tab.id, 'myAction', (response) => {
+  chrome.tabs.sendMessage(tab.id, {action: 'selectArea'}, (response) => {
     chrome.runtime.lastError && window.confirm(chrome.i18n.getMessage('confirmReload')) && chrome.tabs.reload(tab.id);
   });
 });
