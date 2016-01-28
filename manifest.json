@@ -10,7 +10,7 @@
 
   "background": {
     "persistent": false,
-    "scripts": ["eventPage.js"]
+    "scripts": ["main.js"]
   },
 
   "permissions": [
