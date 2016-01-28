@@ -85,21 +85,28 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           event.preventDefault();
         });
 
-        let rectangle = selectionElement.getBoundingClientRect();
-        data.width = rectangle.width;
-        data.height = rectangle.height;
-        data.x = rectangle.left + window.scrollX;
-        data.y = rectangle.top + window.scrollY;
+        let selectionRect = selectionElement.getBoundingClientRect();
+        data.width = selectionRect.width;
+        data.height = selectionRect.height;
+        data.x = selectionRect.left + window.scrollX;
+        data.y = selectionRect.top + window.scrollY;
 
         let anchors = document.getElementsByTagName('a');
         data.links = [];
 
         for (let anchor of anchors) {
+          let anchorRect = anchor.getBoundingClientRect();
+
+          if (!isTouching(anchorRect, selectionRect)
+              && !isIncluded(anchorRect, selectionRect)) {
+            continue;
+          }
+
           let link = {};
           link.url = anchor.href;
           link.title = anchor.title;
           link.text = anchor.textContent;
-
+          link.rect = rect;
           data.links.push(link);
         }
 
@@ -127,3 +134,26 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   return true;
 });
+
+// TODO Class化
+function isTouching(target, selection) {
+  return (
+    (target.left <= selection.left && selection.left <= target.right)
+      || (target.left <= selection.right && selection.right <= target.right)
+  )
+  && (
+    (target.top <= selection.top && selection.top <= target.bottom)
+      || (target.top <= selection.bottom && selection.bottom <= selection.bottom)
+  );
+}
+
+function isIncluded(target, selection) {
+  return (
+    (selection.left <= target.left && target.left <= selection.right)
+      || (selection.left <= target.right && target.right <= selection.right)
+  )
+  && (
+    (selection.top <= target.top && target.top <= selection.bottom)
+      || (selection.top <= target.bottom && target.bottom <= selection.bottom)
+  );
+}
