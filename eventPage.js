@@ -1,3 +1,5 @@
+'use strict'
+
 function disableButton(tabId) {
   // TODO setIcon
   chrome.browserAction.disable(tabId);
@@ -37,7 +39,25 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 });
 
 chrome.browserAction.onClicked.addListener((tab) => {
-  chrome.tabs.sendMessage(tab.id, {action: 'selectArea'}, (response) => {
-    chrome.runtime.lastError && window.confirm(chrome.i18n.getMessage('confirmReload')) && chrome.tabs.reload(tab.id);
+  chrome.tabs.sendMessage(tab.id, {
+    action: 'selectArea'
+  }, (response) => {
+    if (chrome.runtime.lastError) {
+      console.log(chrome.runtime.lastError.message);
+      window.confirm(chrome.i18n.getMessage('confirmReload')) && chrome.tabs.reload(tab.id);
+    }
   });
+});
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  let actions = {
+    dredgeWithSize: () => {
+      console.log(message.data);
+    }
+  }
+
+  if (message.action in actions) {
+    actions[message.action]();
+    return true;
+  }
 });

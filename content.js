@@ -1,5 +1,8 @@
 'use strict';
 
+// Symbol.iteratorが実装されていないためのpolyfill
+HTMLCollection.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator];
+
 const ESC_KEY_CODE = 27;
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -87,10 +90,29 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         data.height = rectangle.height;
         data.x = rectangle.left + window.scrollX;
         data.y = rectangle.top + window.scrollY;
-        data.positionX = window.scrollX;
-        data.positionY = window.scrollY;
+
+        let anchors = document.getElementsByTagName('a');
+        data.links = [];
+
+        for (let anchor of anchors) {
+          let link = {};
+          link.url = anchor.href;
+          link.title = anchor.title;
+          link.text = anchor.textContent;
+
+          data.links.push(link);
+        }
 
         document.body.removeChild(layer);
+
+        let finish = () => {
+          chrome.runtime.sendMessage(chrome.runtime.id, {
+            action: 'dredgeWithSize',
+            data: data
+          });
+        }
+
+        window.requestAnimationFrame(finish);
       }
 
       layer.addEventListener('mousedown', mousedownHandler);
