@@ -47,7 +47,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       }
 
       let keydownHandler = (event) => {
-        debugger; //@ sourceURL=content.js
         if (event.keyCode === ESC_KEY_CODE) {
           cancelDredge();
         }
@@ -106,7 +105,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           link.url = anchor.href;
           link.title = anchor.title;
           link.text = anchor.textContent;
-          link.rect = rect;
           data.links.push(link);
         }
 
@@ -143,7 +141,7 @@ function isTouching(target, selection) {
   )
   && (
     (target.top <= selection.top && selection.top <= target.bottom)
-      || (target.top <= selection.bottom && selection.bottom <= selection.bottom)
+      || (target.top <= selection.bottom && selection.bottom <= target.bottom)
   );
 }
 
