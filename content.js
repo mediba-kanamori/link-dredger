@@ -95,9 +95,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
         for (let anchor of anchors) {
           let anchorRect = anchor.getBoundingClientRect();
+          let overlapRect = overlapWith(anchorRect, selectionRect);
 
-          if (!isTouching(anchorRect, selectionRect)
-              && !isIncluded(anchorRect, selectionRect)) {
+          debugger; //@ sourceURL = content.js
+          if (!isSelected(overlapRect, anchorRect)) {
             continue;
           }
 
@@ -133,25 +134,27 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   return true;
 });
 
-// TODO Class化
-function isTouching(target, selection) {
-  return (
-    (target.left <= selection.left && selection.left <= target.right)
-      || (target.left <= selection.right && selection.right <= target.right)
-  )
-  && (
-    (target.top <= selection.top && selection.top <= target.bottom)
-      || (target.top <= selection.bottom && selection.bottom <= target.bottom)
-  );
+// Overlapped with target and selection.
+function overlapWith(target, selection) {
+  let left = Math.max(target.left, selection.left);
+  let right = Math.min(target.right, selection.right);
+  let top = Math.max(target.top, selection.top);
+  let bottom = Math.min(target.bottom, selection.bottom);
+
+  return {
+    left: left,
+    right: right,
+    top: top,
+    bottom: bottom,
+    width: Math.max(0, right - left),
+    height: Math.max(0, bottom - top)
+  };
 }
 
-function isIncluded(target, selection) {
-  return (
-    (selection.left <= target.left && target.left <= selection.right)
-      || (selection.left <= target.right && target.right <= selection.right)
-  )
-  && (
-    (selection.top <= target.top && target.top <= selection.bottom)
-      || (selection.top <= target.bottom && target.bottom <= selection.bottom)
-  );
+// if greater than threshould, it was selected.
+function isSelected(overlap, target) {
+  let overlapArea = overlap.width * overlap.height;
+  let targetArea = target.width * target.height;
+  let threshould = 50; // TODO chrome.storage
+  return ((overlapArea / targetArea) * 100) > threshould;
 }
