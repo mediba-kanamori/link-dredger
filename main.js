@@ -64,3 +64,32 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 });
+
+function http(url) {
+  let ajax = (method, url, args) => {
+    return new Promise((resolve, reject) => {
+      let client = new XMLHttpRequest();
+
+      client.open(method, url);
+      client.send();
+
+      client.onload = () => {
+        if (200 <= client.status && client.status < 300) {
+          return resolve(client.response);
+        }
+
+        reject(client.statusText);
+      }
+
+      client.onerror = () => {
+        reject(client.statusText);
+      }
+    });
+  };
+
+  return {
+    get: (args) => {
+      return ajax('GET', url, args);
+    }
+  };
+}
