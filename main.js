@@ -54,6 +54,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     dredgeWithSize: () => {
       console.log(message.data);
 
+      Promise.all(message.data.links.map((link) => {
+        return http(link.url).get();
+      }))
+      .then((results) => {
+        console.log(results);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
       chrome.tabs.create({
       });
     }
