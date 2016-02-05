@@ -53,6 +53,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   let actions = {
     dredgeWithSize: () => {
       console.log(message.data);
+
+      chrome.tabs.create({
+      });
     }
   }
 
