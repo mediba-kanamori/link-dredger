@@ -58,7 +58,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         return http(link.url).get();
       }))
       .then((results) => {
-        console.log(results);
+        for (let result of results) {
+          let author = result.getElementsByClassName('dataView')[0].getElementsByTagName('td')[1].innerText;
+          let body = result.getElementById('reportText74').innerText;
+          console.log(author, body);
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -81,11 +85,12 @@ function http(url) {
       let client = new XMLHttpRequest();
 
       client.open(method, url);
+      client.responseType = 'document';
       client.send();
 
       client.onload = () => {
         if (200 <= client.status && client.status < 300) {
-          return resolve(client.response);
+          return resolve(client.responseXML);
         }
 
         reject(client.statusText);
