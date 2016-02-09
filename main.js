@@ -49,6 +49,16 @@ chrome.browserAction.onClicked.addListener((tab) => {
   });
 });
 
+let options = [
+  {
+    targetURI: /https:\/\/7andinm.s.cybozu.com\/o\/ag.cgi\?page=ReportView/,
+    selectors: [
+      '.vr_viewTitleSub b',
+      '#reportText74'
+    ]
+  }
+];
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   let actions = {
     dredgeWithSize: () => {
@@ -59,9 +69,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       }))
       .then((results) => {
         for (let result of results) {
-          sift(result, {
-            targetURI: /https:\/\/7andinm.s.cybozu.com\/o\/ag.cgi\?page=ReportView/
-          });
+          sift(result, options);
         }
       })
       .catch((error) => {
@@ -80,10 +88,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 function sift(document, options) {
-  if (document.documentURI.match(options.targetURI)) {
-    let author = document.querySelector('.vr_viewTitleSub b').innerText;
-    let body = document.querySelector('#reportText74').innerText;
-    console.log(author, body);
+  for (let option of options) {
+    if (!document.documentURI.match(option.targetURI)) {
+      continue;
+    }
+
+    for (let selector of option.selectors) {
+      console.log(document.querySelector(selector).innerText);
+    }
   }
 }
 
