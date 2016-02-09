@@ -59,9 +59,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       }))
       .then((results) => {
         for (let result of results) {
-          let author = result.getElementsByClassName('dataView')[0].getElementsByTagName('td')[1].innerText;
-          let body = result.getElementById('reportText74').innerText;
-          console.log(author, body);
+          sift(result, {
+            targetURI: /https:\/\/7andinm.s.cybozu.com\/o\/ag.cgi\?page=ReportView/
+          });
         }
       })
       .catch((error) => {
@@ -78,6 +78,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 });
+
+function sift(document, options) {
+  if (document.documentURI.match(options.targetURI)) {
+    let author = document.querySelector('.vr_viewTitleSub b').innerText;
+    let body = document.querySelector('#reportText74').innerText;
+    console.log(author, body);
+  }
+}
 
 function http(url) {
   let ajax = (method, url, args) => {
