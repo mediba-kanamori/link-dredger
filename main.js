@@ -52,8 +52,8 @@ chrome.browserAction.onClicked.addListener((tab) => {
 let options = [
   {
     targetURI: /https:\/\/7andinm.s.cybozu.com\/o\/ag.cgi\?page=ReportView/,
-    selectors: [
-      '.vr_viewTitleSub b',
+    titleSelector: '.vr_viewTitleSub b',
+    bodySelectors: [
       '#reportText74'
     ]
   }
@@ -93,7 +93,11 @@ const sift = (document, options) => {
       continue;
     }
 
-    for (let selector of option.selectors) {
+    if (option.titleSelector) {
+      console.log(document.querySelector(option.titleSelector).innerText);
+    }
+
+    for (let selector of option.bodySelectors) {
       console.log(document.querySelector(selector).innerText);
     }
   }
