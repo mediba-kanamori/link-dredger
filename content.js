@@ -150,7 +150,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 // Overlapped with target and selection.
-function overlapWith(target, selection) {
+const overlapWith = (target, selection) => {
   let left = Math.max(target.left, selection.left);
   let right = Math.min(target.right, selection.right);
   let top = Math.max(target.top, selection.top);
@@ -167,7 +167,7 @@ function overlapWith(target, selection) {
 }
 
 // if greater than threshould, it was selected.
-function isSelected(overlap, target) {
+const isSelected = (overlap, target) => {
   let overlapArea = overlap.width * overlap.height;
   let targetArea = target.width * target.height;
   let threshould = 50; // TODO chrome.storage

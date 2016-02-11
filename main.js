@@ -1,11 +1,11 @@
 'use strict'
 
-function disableButton(tabId) {
+const disableButton = (tabId) => {
   // TODO setIcon
   chrome.browserAction.disable(tabId);
 }
 
-function enableButton(tabId) {
+const enableButton = (tabId) => {
   // TODO setIcon
   chrome.browserAction.enable(tabId);
 }
@@ -87,7 +87,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
-function sift(document, options) {
+const sift = (document, options) => {
   for (let option of options) {
     if (!document.documentURI.match(option.targetURI)) {
       continue;
@@ -99,7 +99,7 @@ function sift(document, options) {
   }
 }
 
-function http(url) {
+const http = (url) => {
   let ajax = (method, url, args) => {
     return new Promise((resolve, reject) => {
       let client = new XMLHttpRequest();
