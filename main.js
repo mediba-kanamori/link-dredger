@@ -62,14 +62,12 @@ let options = [
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   let actions = {
     dredgeWithSize: () => {
-      console.log(message.data);
-
       Promise.all(message.data.links.map((link) => {
         return http(link.url).get();
       }))
       .then((results) => {
         for (let result of results) {
-          sift(result, options);
+          console.log(sift(result, options));
         }
       })
       .catch((error) => {
@@ -87,19 +85,24 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
-const sift = (document, options) => {
+const sift = (target, options) => {
   for (let option of options) {
-    if (!document.documentURI.match(option.targetURI)) {
+    if (!target.documentURI.match(option.targetURI)) {
       continue;
     }
 
+    let data = {};
+    data.body = [];
+
     if (option.titleSelector) {
-      console.log(document.querySelector(option.titleSelector).innerText);
+      data.title = target.querySelector(option.titleSelector).innerText;
     }
 
     for (let selector of option.bodySelectors) {
-      console.log(document.querySelector(selector).innerText);
+      data.body.push(target.querySelector(selector).innerText);
     }
+
+    return data;
   }
 }
 
