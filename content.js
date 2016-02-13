@@ -110,20 +110,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
         document.body.removeChild(layer);
 
-        let confirmContainer = document.createElement('div');
-        confirmContainer.className = 'dredge-confirm';
-        document.body.appendChild(confirmContainer);
-
-        let docflag = document.createDocumentFragment();
-        for (let link of data.links) {
-          let anchor = document.createElement('a');
-          anchor.textContent = (link.text || 'None title') + '<' + link.url + '>';
-          anchor.href = link.url;
-          docflag.appendChild(anchor);
-        }
-
-        confirmContainer.appendChild(docflag);
-
         let finish = () => {
           chrome.runtime.sendMessage(chrome.runtime.id, {
             action: 'dredgeWithSize',
