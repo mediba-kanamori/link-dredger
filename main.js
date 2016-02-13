@@ -66,15 +66,27 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         return http(link.url).get();
       }))
       .then((results) => {
+        let data = [];
+
         for (let result of results) {
-          console.log(sift(result, options));
+          data.push(sift(result, options));
         }
+
+        chrome.tabs.create({
+          url: 'dredged.html'
+        }, (tab) => {
+          chrome.tabs.sendMessage(tab.id, {
+            action: 'draw',
+            data: data
+          }, (response) => {
+            if (chrome.runtime.lastError) {
+              console.log(chrome.runtime.lastError.message);
+            }
+          });
+        });
       })
       .catch((error) => {
         console.log(error);
-      });
-
-      chrome.tabs.create({
       });
     }
   }

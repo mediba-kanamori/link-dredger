@@ -137,10 +137,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       layer.addEventListener('mousedown', mousedownHandler);
       document.addEventListener('keydown', keydownHandler);
       window.addEventListener('contextmenu', cancelDredge);
-    },
-    confirmLinks: () => {
     }
-  }
+  };
 
   if (message.action in actions) {
     actions[message.action]();
