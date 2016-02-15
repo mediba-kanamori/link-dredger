@@ -13,6 +13,11 @@
     "scripts": ["main.js"]
   },
 
+  "options_ui": {
+    "page": "options.html",
+    "chrome_style": true
+  },
+
   "permissions": [
     "<all_urls>",
     "tabs"
