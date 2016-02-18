@@ -7,11 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
         targetURI: '',
         titleSelector: '',
         bodySelectors: ''
-      },
-      {
-        targetURI: '',
-        titleSelector: '',
-        bodySelectors: ''
       }
     ]
   }, (items) => {

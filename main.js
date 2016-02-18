@@ -49,16 +49,6 @@ chrome.browserAction.onClicked.addListener((tab) => {
   });
 });
 
-let options = [
-  {
-    targetURI: /https:\/\/7andinm.s.cybozu.com\/o\/ag.cgi\?page=ReportView/,
-    titleSelector: '.vr_viewTitleSub b',
-    bodySelectors: [
-      '#reportText74'
-    ]
-  }
-];
-
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   let actions = {
     dredgeWithSize: () => {
@@ -68,9 +58,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       .then((results) => {
         let data = [];
 
-        for (let result of results) {
-          data.push(sift(result, options));
-        }
+        chrome.storage.sync.get((items) => {
+          for (let result of results) {
+            data.push(sift(result, items.options));
+          }
+        });
 
         chrome.tabs.create({
           url: 'dredged.html'
@@ -110,9 +102,9 @@ const sift = (target, options) => {
       data.title = target.querySelector(option.titleSelector).innerText;
     }
 
-    for (let selector of option.bodySelectors) {
+    option.bodySelectors.split(',').forEach((selector) => {
       data.body.push(target.querySelector(selector).innerText);
-    }
+    });
 
     return data;
   }
