@@ -91,7 +91,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 const sift = (target, options) => {
   for (let option of options) {
-    if (!target.documentURI.match(option.targetURI)) {
+    let regexp = new RegExp(option.targetURI);
+
+    if (!target.documentURI.match(regexp)) {
       continue;
     }
 
