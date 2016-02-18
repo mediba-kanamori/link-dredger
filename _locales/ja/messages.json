@@ -1,5 +1,17 @@
 {
   "confirmReload": {
     "message": "この拡張を使うためには一度タブをリロードする必要があります。今すぐリロードしますか？"
+  },
+
+  "body": {
+    "message": "本文"
+  },
+
+  "targetURI": {
+    "message": "対象URI"
+  },
+
+  "title": {
+    "message": "タイトル"
   }
 }
