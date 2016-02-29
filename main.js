@@ -102,10 +102,15 @@ const sift = (target, options) => {
 
     if (option.titleSelector) {
       data.title = target.querySelector(option.titleSelector).innerText;
+
+      console.log(data.title);
     }
 
     option.bodySelectors.split(',').forEach((selector) => {
-      data.body.push(target.querySelector(selector).innerText);
+      let text = target.querySelector(selector).innerText;
+      data.body.push(text);
+
+      console.log(text);
     });
 
     return data;
