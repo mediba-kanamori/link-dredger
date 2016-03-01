@@ -56,8 +56,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         return http(link.url).get();
       }))
       .then((results) => {
-        chrome.tabs.create({
-          url: 'dredged.html'
+        chrome.storage.sync.get((items) => {
+          let data = [];
+
+          for (let result of results) {
+            data.push(sift(result, items.options));
+          }
+
+          chrome.storage.sync.set({
+            results: data
+          }, () => {
+            chrome.tabs.create({
+              url: 'dredged.html'
+            });
+          });
         });
       })
       .catch((error) => {
@@ -65,15 +77,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       });
     },
     getStorageData: () => {
-      let data = [];
-
       chrome.storage.sync.get((items) => {
-        for (let result of results) {
-          data.push(sift(result, items.options));
-        }
+        sendResponse(items.results);
       });
-
-      sendResponse(data);
     }
   }
 
