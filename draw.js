@@ -2,7 +2,7 @@
 
 chrome.storage.sync.get((items) => {
   if (chrome.runtime.lastError) {
-    console.log(chrome.runtime.lastError.message);
+    return console.log(chrome.runtime.lastError.message);
   }
 
   Promise.all(items.selection.links.map((link) => {
@@ -30,16 +30,6 @@ chrome.storage.sync.get((items) => {
   });
 });
 
-//chrome.runtime.sendMessage({
-//  action: 'getSelection'
-//}, (selection) => {
-//  if (chrome.runtime.lastError) {
-//    console.log(chrome.runtime.lastError.message);
-//  }
-//
-//  draw(data);
-//});
-
 const generate = (link, parent) => {
   let section = document.createElement('section');
   parent.appendChild(section);
@@ -54,27 +44,6 @@ const generate = (link, parent) => {
     p.textContent = text;
   }
 };
-
-const draw = (data) => {
-  let docflag = document.createDocumentFragment();
-
-  for (let link of data) {
-    let section = document.createElement('section');
-    docflag.appendChild(section);
-
-    let h1 = document.createElement('h1');
-    section.appendChild(h1);
-    h1.textContent = link.title;
-
-    for (let text of link.body) {
-      let p = document.createElement('p');
-      section.appendChild(p);
-      p.textContent = text;
-    }
-  }
-
-  document.body.appendChild(docflag);
-}
 
 const http = (url) => {
   let ajax = (method, url, args) => {

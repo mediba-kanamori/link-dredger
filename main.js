@@ -55,36 +55,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       chrome.tabs.create({
         url: 'dredged.html'
       });
-    },
-    dredgeWithSize: () => {
-      Promise.all(message.data.links.map((link) => {
-        return http(link.url).get();
-      }))
-      .then((results) => {
-        chrome.storage.sync.get((items) => {
-          let data = [];
-
-          for (let result of results) {
-            data.push(sift(result, items.options));
-          }
-
-          chrome.storage.sync.set({
-            results: data
-          }, () => {
-            chrome.tabs.create({
-              url: 'dredged.html'
-            });
-          });
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    },
-    getStorageData: () => {
-      chrome.storage.sync.get((items) => {
-        sendResponse(items.results);
-      });
     }
   }
 
@@ -93,61 +63,3 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 });
-
-const sift = (target, options) => {
-  for (let option of options) {
-    let regexp = new RegExp(option.targetURI);
-
-    if (!target.documentURI.match(regexp)) {
-      continue;
-    }
-
-    let data = {};
-    data.body = [];
-
-    if (option.titleSelector) {
-      data.title = target.querySelector(option.titleSelector).innerText;
-
-      console.log(data.title);
-    }
-
-    option.bodySelectors.split(',').forEach((selector) => {
-      let text = target.querySelector(selector).innerText;
-      data.body.push(text);
-
-      console.log(text);
-    });
-
-    return data;
-  }
-}
-
-const http = (url) => {
-  let ajax = (method, url, args) => {
-    return new Promise((resolve, reject) => {
-      let client = new XMLHttpRequest();
-
-      client.open(method, url);
-      client.responseType = 'document';
-      client.send();
-
-      client.onload = () => {
-        if (200 <= client.status && client.status < 300) {
-          return resolve(client.responseXML);
-        }
-
-        reject(client.statusText);
-      }
-
-      client.onerror = () => {
-        reject(client.statusText);
-      }
-    });
-  };
-
-  return {
-    get: (args) => {
-      return ajax('GET', url, args);
-    }
-  };
-}
