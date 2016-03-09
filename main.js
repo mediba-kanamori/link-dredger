@@ -51,6 +51,11 @@ chrome.browserAction.onClicked.addListener((tab) => {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   let actions = {
+    createTab: () => {
+      chrome.tabs.create({
+        url: 'dredged.html'
+      });
+    },
     dredgeWithSize: () => {
       Promise.all(message.data.links.map((link) => {
         return http(link.url).get();

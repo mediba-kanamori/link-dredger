@@ -8,7 +8,7 @@ const ESC_KEY_CODE = 27;
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   let actions = {
     selectArea: () => {
-      let startX, startY, data = {};
+      let startX, startY, selection = {};
       let tempUserSelect = document.body.style.webkitUserSelect;
 
       // TODO このへんClassに切り出す
@@ -85,13 +85,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         });
 
         let selectionRect = selectionElement.getBoundingClientRect();
-        data.width = selectionRect.width;
-        data.height = selectionRect.height;
-        data.x = selectionRect.left + window.scrollX;
-        data.y = selectionRect.top + window.scrollY;
+        selection.width = selectionRect.width;
+        selection.height = selectionRect.height;
+        selection.x = selectionRect.left + window.scrollX;
+        selection.y = selectionRect.top + window.scrollY;
 
         let anchors = document.getElementsByTagName('a');
-        data.links = [];
+        selection.links = [];
 
         for (let anchor of anchors) {
           let anchorRect = anchor.getBoundingClientRect();
@@ -105,17 +105,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           link.url = anchor.href;
           link.title = anchor.title;
           link.text = anchor.textContent;
-          data.links.push(link);
+          selection.links.push(link);
         }
 
         document.body.removeChild(layer);
 
         let finish = () => {
-          chrome.runtime.sendMessage(chrome.runtime.id, {
-            action: 'dredgeWithSize',
-            data: data
+          chrome.storage.sync.set({
+            selection: selection
+          }, () => {
+            chrome.runtime.sendMessage(chrome.runtime.id, {
+              action: 'createTab'
+            });
           });
-        }
+        };
 
         window.requestAnimationFrame(finish);
       }
