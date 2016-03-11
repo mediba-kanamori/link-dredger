@@ -41,25 +41,18 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 chrome.browserAction.onClicked.addListener((tab) => {
   chrome.tabs.sendMessage(tab.id, {
     action: 'selectArea'
-  }, (response) => {
+  }, (selection) => {
     if (chrome.runtime.lastError) {
       console.log(chrome.runtime.lastError.message);
-      window.confirm(chrome.i18n.getMessage('confirmReload')) && chrome.tabs.reload(tab.id);
+      return window.confirm(chrome.i18n.getMessage('confirmReload')) && chrome.tabs.reload(tab.id);
     }
-  });
-});
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  let actions = {
-    createTab: () => {
+    chrome.storage.sync.set({
+      selection: selection
+    }, () => {
       chrome.tabs.create({
         url: 'dredged.html'
       });
-    }
-  }
-
-  if (message.action in actions) {
-    actions[message.action]();
-    return true;
-  }
+    });
+  });
 });

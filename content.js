@@ -109,18 +109,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         }
 
         document.body.removeChild(layer);
-
-        let finish = () => {
-          chrome.storage.sync.set({
-            selection: selection
-          }, () => {
-            chrome.runtime.sendMessage(chrome.runtime.id, {
-              action: 'createTab'
-            });
-          });
-        };
-
-        window.requestAnimationFrame(finish);
+        sendResponse(selection);
       }
 
       layer.addEventListener('mousedown', mousedownHandler);
