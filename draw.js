@@ -6,7 +6,7 @@ chrome.storage.sync.get((items) => {
   }
 
   Promise.all(items.selection.links.map((link) => {
-    return http(link.url).get();
+    return http(link).get();
   }))
   .then((responses) => {
     let docflag = document.createDocumentFragment();
@@ -38,6 +38,18 @@ const generate = (link, parent) => {
   section.appendChild(h1);
   h1.textContent = link.title;
 
+  let footer = document.createElement('footer');
+  section.appendChild(footer);
+
+  let via = document.createElement('p');
+  footer.appendChild(via);
+  via.textContent = 'via';
+
+  let a = document.createElement('a');
+  via.appendChild(a);
+  a.href = link.via.url;
+  a.textContent = link.via.title;
+
   for (let text of link.body) {
     let p = document.createElement('p');
     section.appendChild(p);
@@ -45,18 +57,20 @@ const generate = (link, parent) => {
   }
 };
 
-const http = (url) => {
-  let ajax = (method, url, args) => {
+const http = (link) => {
+  let ajax = (method, link, args) => {
     return new Promise((resolve, reject) => {
       let client = new XMLHttpRequest();
 
-      client.open(method, url);
+      client.open(method, link.url);
       client.responseType = 'document';
       client.send();
 
       client.onload = () => {
         if (200 <= client.status && client.status < 300) {
-          return resolve(client.responseXML);
+          let response = client.responseXML;
+          response.via = link;
+          return resolve(response);
         }
 
         reject(client.statusText);
@@ -70,14 +84,19 @@ const http = (url) => {
 
   return {
     get: (args) => {
-      return ajax('GET', url, args);
+      return ajax('GET', link, args);
     }
   };
 };
 
-const sift = (target, option) => {
+const sift = (response, option) => {
+  let target = response.body;
+  let via = response.via;
   let data = {};
-  data.body = [];
+
+  data.via = {};
+  data.via.title = via.title || via.text;
+  data.via.url = via.url;
 
   if (option.titleSelector) {
     data.title = target.querySelector(option.titleSelector).innerText;
@@ -85,6 +104,7 @@ const sift = (target, option) => {
     console.log(data.title);
   }
 
+  data.body = [];
   option.bodySelectors.split(',').forEach((selector) => {
     let text = target.querySelector(selector).innerText;
     data.body.push(text);
